@@ -8,34 +8,50 @@ export interface IWatcherInfo {
     newValue?: any;
 };
 
-class ObjectWatcher<T> {
+export class ObjectWatcher<T> {
 
     private valueSubject: Subject<IWatcherInfo>;
     private propSubject: Subject<IWatcherInfo>;
-    private proxy: T;
+    private proxyObject: T;
     private isBrowser = false;
     constructor(object: T) {
 
         this.isBrowser= typeof window !== 'undefined' && typeof window.document !== 'undefined';
-   
+        this.valueSubject = new Subject<IWatcherInfo>();
+        this.propSubject = new Subject<IWatcherInfo>();
+
         this.onWatchValue = (a ,b ,c) => {};
+        const self = this;
         const handler = {
             set(target: any, prop: string | number, val: any): boolean {
 
                 if(!target.hasOwnProperty(prop)) {
-                    this.changeProp(prop);
+                    self.changeProp(target, prop);
                     return true;
                 }
 
                 if(target[prop] !== val) {
-                    this.changeValue(target, name, target[name], val);
+                    self.changeValue(target, prop, target[prop], val);
                     target[prop] = val;
+                    return true;
                 }
                 return false;
             }
         };
-        this.proxy = new Proxy(object, handler);
+        this.proxyObject = new Proxy(object, handler);
     }
+    public get proxy(): T {
+        return this.proxyObject;
+    }
+    
+    public get valueChangeSubject(): Subject<IWatcherInfo> {
+        return this.valueSubject;
+    }
+    
+    public get propChangeSubject(): Subject<IWatcherInfo> {
+        return this.propSubject;
+    }
+
     private changeValue(target: any, prop: string | number, old: any, nval: any): boolean {
         
         const data: IWatcherInfo = {
@@ -73,5 +89,4 @@ class ObjectWatcher<T> {
    
     public onWatchValue: (props: string | number, oldv: any, newv: any ) => void;
     public onWatchProp: (props: string | number, oldv: any, newv: any ) => void;
-
 }

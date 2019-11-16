@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch src --delay 1 --exec ts-node src/lib.ts",
+    "test": "nodemon --watch src --delay 1 --exec ts-node src/example/sampe_subject.ts",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
