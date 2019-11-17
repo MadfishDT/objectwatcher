@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch src --delay 1 --exec ts-node src/lib.ts",
-    "test": "nodemon --watch src --delay 1 --exec ts-node src/example/sampe_subject.ts",
-    "build": "webpack --config webpack.config.js"
+    "test": "nodemon --watch src --delay 1 --exec ts-node src/example/sample_subject.ts",
+    "build-dev": "webpack --config webpack.dev.config.js",
+    "build-prod": "webpack --config webpack.prod.config.js",
+    "build-umd": "webpack --config webpack.umd.config.js"
   },
   "keywords": [],
   "author": "MadfishDT",

@@ -11,13 +11,12 @@ module.exports = {
       }
     ]
   },
-  devtool: 'source-map',
   target: 'node',
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]
   },
   output: {
-    filename: 'lib.bundle.js',
+    filename: 'lib.bundle.prod.js',
     path: path.resolve(__dirname, 'dist')
   }
 };

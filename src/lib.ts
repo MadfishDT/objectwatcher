@@ -3,7 +3,14 @@ import { Subject } from 'rxjs';
 
 export interface IWatcherInfo {
     target: any;
-    name: string | number;
+    prop: string | number;
+    oldValue?: any;
+    newValue?: any;
+};
+
+export interface IWatcherInfo {
+    target: any;
+    prop: string | number;
     oldValue?: any;
     newValue?: any;
 };
@@ -14,6 +21,7 @@ export class ObjectWatcher<T> {
     private propSubject: Subject<IWatcherInfo>;
     private proxyObject: T;
     private isBrowser = false;
+    protected handler: any = null;
     constructor(object: T) {
 
         this.isBrowser= typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -25,6 +33,10 @@ export class ObjectWatcher<T> {
         const handler = {
             set(target: any, prop: string | number, val: any): boolean {
 
+                if (target instanceof Array) {
+                    prop = Number(prop);
+                }
+
                 if(!target.hasOwnProperty(prop)) {
                     self.changeProp(target, prop);
                     return true;
@@ -33,9 +45,10 @@ export class ObjectWatcher<T> {
                 if(target[prop] !== val) {
                     self.changeValue(target, prop, target[prop], val);
                     target[prop] = val;
+                    
                     return true;
                 }
-                return false;
+                return true;
             }
         };
         this.proxyObject = new Proxy(object, handler);
@@ -56,7 +69,7 @@ export class ObjectWatcher<T> {
         
         const data: IWatcherInfo = {
             target: target,
-            name: prop,
+            prop: prop,
             oldValue: old,
             newValue: nval
         };
@@ -69,7 +82,7 @@ export class ObjectWatcher<T> {
     private changeProp(target: any, prop: string | number): boolean {
         const data: IWatcherInfo = {
             target: target,
-            name: prop,
+            prop: prop,
         }
         this.propSubject.next(data);
         if(this.isBrowser) {
@@ -90,3 +103,4 @@ export class ObjectWatcher<T> {
     public onWatchValue: (props: string | number, oldv: any, newv: any ) => void;
     public onWatchProp: (props: string | number, oldv: any, newv: any ) => void;
 }
+
