@@ -7,6 +7,7 @@
     "start": "nodemon --watch src --delay 1 --exec ts-node src/lib.ts",
     "test-object-subject": "nodemon --watch src --delay 1 --exec ts-node src/example/sample.object.subject.ts",
     "test-array-subject": "nodemon --watch src --delay 1 --exec ts-node src/example/sample.array.subject.ts",
+    "test-value-subject": "nodemon --watch src --delay 1 --exec ts-node src/example/sample.value.subject.ts",
     "build-dev": "webpack --config webpack.dev.config.js",
     "build-prod": "webpack --config webpack.prod.config.js",
     "build-umd": "webpack --config webpack.umd.config.js"

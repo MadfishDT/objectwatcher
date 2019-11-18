@@ -30,6 +30,7 @@ export class ObjectWatcher<T> {
         const handler = {
             set: (target: any, prop: string | number, val: any): boolean => {
 
+                console.log('called setter');
                 if (target instanceof Array) {
                     if(prop !== 'length') {
                         prop = Number(prop);
