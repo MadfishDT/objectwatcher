@@ -32,6 +32,4 @@ export declare class ObjectWatcher<T> {
     private changeProp;
     private dispatchChangeWindowsMessage;
     private checkOrderChanged;
-    onWatchValue: (props: string | number, oldv: any, newv: any) => void;
-    onWatchProp: (props: string | number, oldv: any, newv: any) => void;
 }

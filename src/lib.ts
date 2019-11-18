@@ -94,7 +94,6 @@ export class ObjectWatcher<T> {
       
         this.valueSubject = new Subject<IWatcherInfo>();
         this.propSubject = new Subject<IWatcherInfo>();
-        this.onWatchValue = (a ,b ,c) => {};
 
         const handler = {
             set: (target: any, prop: string | number, val: any): boolean => {
@@ -216,6 +215,4 @@ export class ObjectWatcher<T> {
         return false;
     }
    
-    public onWatchValue: (props: string | number, oldv: any, newv: any ) => void;
-    public onWatchProp: (props: string | number, oldv: any, newv: any ) => void;
 }

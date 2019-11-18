@@ -23,9 +23,9 @@ testWatcher.valueChangeSubject.subscribe((data) => {
     console.log('**************************************************************');
     console.log(`object value changed`);
     console.log(`object value changed target is`, data.target);
-    console.log(`object prop(index) is ${data.prop}`);
-    console.log(`object old value is ${data.oldValue}`);
-    console.log(`object new value is ${data.newValue}`);
+    console.log(`object prop(key) is ${data.prop}`);
+    console.log(`object old value is '${data.oldValue}'`);
+    console.log(`object new value is '${data.newValue}'`);
     console.log('**************************************************************\n');
 })
 
@@ -36,12 +36,12 @@ testWatcher.valueChangeSubject.subscribe((data) => {
 testWatcher.propChangeSubject.subscribe((data) => {
     console.log('**************************************************************');
     console.log(`object value changed target is`, data.target);
-    console.log(`object prop(index) is ${data.prop}`);
+    console.log(`object prop(key) '${data.prop}' added`);
     console.log('**************************************************************\n');
 })
 
 //try change object property value
-testObject.name = 'this is name2';
+testObject.name = 'that is not name';
 
 //try add object property
-testObject['name2'] = 'this is name2';
+testObject['name2'] = 'I am Name2';

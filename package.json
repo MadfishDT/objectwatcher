@@ -2,7 +2,7 @@
   "name": "objectwatcher",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/lib.bundle.prod.js",
   "scripts": {
     "start": "nodemon --watch src --delay 1 --exec ts-node src/lib.ts",
     "test-object-subject": "nodemon --watch src --delay 1 --exec ts-node example/sample.object.subject.ts",
@@ -15,6 +15,7 @@
   "keywords": [],
   "author": "MadfishDT",
   "license": "ISC",
+  "types": "lib.d.ts",
   "devDependencies": {
     "@types/node": "^12.12.8",
     "nodemon": "^1.19.4",
