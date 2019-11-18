@@ -5,6 +5,8 @@
           "es6",
           "dom"
        ],
+       "declaration": true,
+       "declarationDir": "./dist",
        "target": "es5",
        "module": "commonjs",
        "moduleResolution": "node",
@@ -12,5 +14,8 @@
        "emitDecoratorMetadata": true,
        "experimentalDecorators": true,
        "sourceMap": true
-    }
+    },
+   "include": [
+      "src/**/*"
+   ],
   }

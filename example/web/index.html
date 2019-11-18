@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../dist/lib.bundle.umd.js"></script>
+</head>
+<body>
+<p>
+This is Object Watcher Sample Page
+</p>
+
+<p>
+Please See Console log in Inspector
+</p>
+<script>
+    var test = { name: 'james.eo'};
+    var testWatcher = new ObjectWatcher(test);
+    test = testWatcher.proxy;
+
+    testWatcher.valueChangeSubject.subscribe((data) => {
+        console.log('**************************************************************');
+        console.log(`object value changed`);
+        console.log(`object value changed target is`, data.target);
+        console.log(`object prop(index) is ${data.prop}`);
+        console.log(`object old value is ${data.oldValue}`);
+        console.log(`object new value is ${data.newValue}`);
+        console.log('**************************************************************\n');
+    });
+
+    window.addEventListener('changeObjectValues', (eventTarget) => {
+        data = eventTarget.detail;
+        console.log('**************************************************************');
+        console.log(`object value changed`);
+        console.log(`object value changed target is`, data.target);
+        console.log(`object prop(index) is ${data.prop}`);
+        console.log(`object old value is ${data.oldValue}`);
+        console.log(`object new value is ${data.newValue}`);
+        console.log('**************************************************************\n');
+    });
+
+    test.name = "james.kim";
+
+
+
+</script>
+
+</body>
+</html>

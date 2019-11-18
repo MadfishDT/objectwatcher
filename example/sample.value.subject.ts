@@ -1,4 +1,4 @@
-import { ObjectWatcher } from '../lib';
+import { ObjectWatcher } from '../src/lib';
 
 /**
  * Object Watcher Rxjs Subject Example code

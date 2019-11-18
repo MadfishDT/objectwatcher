@@ -17,6 +17,6 @@ module.exports = {
   },
   output: {
     filename: 'lib.bundle.prod.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, '../dist')
   }
 };

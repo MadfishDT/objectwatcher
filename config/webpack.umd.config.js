@@ -12,12 +12,13 @@ module.exports = {
     ]
   },
   devtool: 'source-map',
-  target: 'umd',
+  target: 'web',
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]
   },
   output: {
     filename: 'lib.bundle.umd.js',
-    path: path.resolve(__dirname, 'dist')
+    libraryTarget: 'umd',
+    path: path.resolve(__dirname, '../dist')
   }
 };
