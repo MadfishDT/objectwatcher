@@ -37,8 +37,23 @@ Please See Console log in Inspector
         console.log('**************************************************************\n');
     });
 
-    test.name = "james.kim";
+    testWatcher.propChangeSubject.subscribe((data) => {
+        console.log('**************************************************************');
+        console.log(`object prop changed target is`, data.target);
+        console.log(`object prop(key) '${data.prop}' added`);
+        console.log('**************************************************************\n');
+    })
 
+    window.addEventListener('changeObjectProps', (eventTarget) => {
+        data = eventTarget.detail;
+        console.log('**************************************************************');
+        console.log(`object prop changed`);
+        console.log(`object prop changed target is`, data.target);
+        console.log(`object prop(index) is ${data.prop}`);
+        console.log('**************************************************************\n');
+    });
+    test.name = "james.kim";
+    test.name2 = "james.kim1";
 </script>
 
 </body>
