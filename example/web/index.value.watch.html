@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../dist/lib.bundle.umd.js"></script>
+</head>
+<body>
+<p>
+This is Object Watcher Sample Page
+</p>
+
+<p>
+Please See Console log in Inspector
+</p>
+<script>
+    test = 'james.eo';
+    const gWatcher = new GlobalLiteralWatcher();
+    gWatcher.watch();
+
+    gWatcher.valueChangeSubject.subscribe( (data) => {
+        console.log('**************************************************************');
+        console.log(`value subject changed`);
+        console.log(`value subject changed target is`, data.target);
+        console.log(`value subject prop(index) is ${data.prop}`);
+        console.log(`value subject old value is ${data.oldValue}`);
+        console.log(`value subject new value is ${data.newValue}`);
+        console.log('**************************************************************\n');
+    })
+    window.addEventListener('onGlobalVarChange', (data) => {
+        console.log('**************************************************************');
+        console.log(`value Event value changed`);
+        console.log(`value Event value changed target is`, data.detail.target);
+        console.log(`value Event prop(index) is ${data.detail.prop}`);
+        console.log(`value Event old value is ${data.detail.oldValue}`);
+        console.log(`value Event new value is ${data.detail.newValue}`);
+        console.log('**************************************************************\n');
+    });
+  
+    test = 'james.eo2';
+
+</script>
+
+</body>
+</html>

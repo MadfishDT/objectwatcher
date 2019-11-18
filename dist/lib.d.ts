@@ -5,6 +5,16 @@ export interface IWatcherInfo {
     oldValue?: any;
     newValue?: any;
 }
+export declare class GlobalLiteralWatcher {
+    private isBrowser;
+    private valueSubject;
+    private isStop;
+    constructor();
+    get valueChangeSubject(): Subject<IWatcherInfo>;
+    private dispatchChangeWindowsMessage;
+    stopWatch(): void;
+    watch(): boolean;
+}
 export declare class ObjectWatcher<T> {
     private valueSubject;
     private propSubject;

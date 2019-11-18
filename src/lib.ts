@@ -1,5 +1,6 @@
 
 import { Subject } from 'rxjs';
+import { isBoolean } from 'util';
 
 export interface IWatcherInfo {
     target: any;
@@ -7,6 +8,74 @@ export interface IWatcherInfo {
     oldValue?: any;
     newValue?: any;
 };
+
+export class GlobalLiteralWatcher {
+
+    private isBrowser = false;
+    private valueSubject: Subject<IWatcherInfo>;
+    private isStop: boolean;
+    constructor() {
+        this.isBrowser= typeof window !== 'undefined' && typeof window.document !== 'undefined';
+        this.valueSubject = new Subject<IWatcherInfo>();
+        this.isStop = false;
+    }
+
+    public get valueChangeSubject(): Subject<IWatcherInfo> {
+        return this.valueSubject;
+    }
+
+    private dispatchChangeWindowsMessage(type: string, data: IWatcherInfo): boolean {
+        if(this.isBrowser && window) {
+            const event = new CustomEvent(type, {detail: data});
+            window.dispatchEvent(event);
+        } else {
+            return false;
+        }
+        return true;
+    }
+    public stopWatch(): void {
+        this.isStop = true;
+    }
+    public watch(): boolean {
+        let timeout = 600;
+        let localCopyForVars: any = {};
+        this.isStop = false;
+        if(this.isBrowser) {
+            let pollForChange = () => {
+                const varsToWatch = Object.keys(window).filter( (item) => {
+                    try {
+                        return typeof window[item] === 'string' || typeof window[item] === 'number' ? true : false;
+                    } catch(e) {
+                        return false;
+                    }
+                })
+                for (let varToWatch of varsToWatch) {
+                    if (localCopyForVars[varToWatch] !== window[varToWatch]) {
+                        const eventData = {
+                            target: window,
+                            prop: varToWatch,
+                            oldValue: localCopyForVars[varToWatch],
+                            newValue: window[varToWatch]
+                        };
+                        this.dispatchChangeWindowsMessage('onGlobalVarChange', eventData);
+                        this.valueChangeSubject.next(eventData);
+                        localCopyForVars[varToWatch] = window[varToWatch];
+                    }
+                }
+                if(!this.isStop) {
+                    setTimeout(pollForChange, timeout);
+                }
+                
+            };
+            if(!this.isStop) {
+                setTimeout(pollForChange, timeout);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
 
 export class ObjectWatcher<T> {
 
@@ -29,8 +98,6 @@ export class ObjectWatcher<T> {
 
         const handler = {
             set: (target: any, prop: string | number, val: any): boolean => {
-
-                console.log('called setter');
                 if (target instanceof Array) {
                     if(prop !== 'length') {
                         prop = Number(prop);
@@ -61,7 +128,7 @@ export class ObjectWatcher<T> {
                     enumerable: true,
                     configurable: true,
                     writable: true,
-                    value: function( compareFn?: (a: any, b: any) => number ) {
+                    value: function( compareFn?: (a: any, b: any) => number ) : any {
                         let tempOrigin = this.slice();
                         let newObject = originSort.call(this, compareFn);
                         self.checkOrderChanged(tempOrigin, newObject);
