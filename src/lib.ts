@@ -43,8 +43,25 @@ export class GlobalLiteralWatcher {
         this.isStop = true;
     }
     public watch(): boolean {
+
+        if (this.isStop) {
+            throw Error('already watch running');
+            return false;
+        }
+
+        let localCopyForVars = {};
+        const originToWatch = Object.keys(window).filter( (item) => {
+            try {
+                return typeof window[item] === 'string' || typeof window[item] === 'number' ? true : false;
+            } catch(e) {
+                return false;
+            }
+        });
+        for (let originToitems of originToWatch) {
+            localCopyForVars[originToitems] = window[originToitems];
+        }
+
         let timeout = 600;
-        let localCopyForVars: any = {};
         this.isStop = false;
         if(this.isBrowser) {
             let pollForChange = () => {

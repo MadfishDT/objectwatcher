@@ -1,5 +1,5 @@
 {
-  "name": "objectwatcher",
+  "name": "objectwatchers",
   "version": "0.0.1",
   "description": "",
   "main": "dist/lib.bundle.prod.js",
@@ -11,8 +11,13 @@
     "build-prod": "webpack --config config/webpack.prod.config.js",
     "build-umd": "webpack --config config/webpack.umd.config.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MadfishDT/objectwatcher"
+  },
+  "keywords": ["watcher","object","observer","web","typescript","javscript"],
   "author": "MadfishDT",
+  "homepage": "https://madfishdt.github.io",
   "license": "ISC",
   "types": "dist/lib.d.ts",
   "devDependencies": {

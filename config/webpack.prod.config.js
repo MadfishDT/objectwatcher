@@ -12,6 +12,7 @@ module.exports = {
     ]
   },
   target: 'node',
+  mode: 'production',
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ]
   },

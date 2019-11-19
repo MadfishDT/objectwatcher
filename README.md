@@ -2,6 +2,11 @@
 Object value and prop change detection module
 * **Object, Array, Web Global value watcher**
 
+**Install**
+-
+
+- npm install objectwarchers
+
 **Support features:**
 -
 * browser support(UMD module)
@@ -102,9 +107,11 @@ Object value and prop change detection module
 **How to Use**
 -
 
-- Object Value and Propery change watch
+- **Typescript**
+
+    - Object Value and Propery change watch
     ``` typescript
-    import { ObjectWatcher } from './src/lib';
+    import { ObjectWatcher } from 'objectwatchers';
 
     /**
      * Object Watcher Rxjs Subject Example code
@@ -146,10 +153,101 @@ Object value and prop change detection module
     ```
 
 
-- Array Value and Order change watch
+    - Array Value and Order change watch
 
     ``` typescript
-    import { ObjectWatcher } from '../src/lib';
+    import { ObjectWatcher } from 'objectwatchers';
+
+    /**
+     * Object Watcher Rxjs Subject Example code
+     */
+    let testArray = [1,2,3,5,4,8,7,9];
+    //Make Object Watcher
+    const testArrayWatcher = new ObjectWatcher(testArray);
+
+    //Getting proxy object, original object convert to proxy object
+    testArray = testArrayWatcher.proxy;
+    console.log(`original array is ${testArray}`);
+
+    /**
+     * subscribe valueChangeSubject
+     * this occur before array property value is changed
+     */
+    testArrayWatcher.valueChangeSubject.subscribe( (data) => {
+        
+    });
+
+    /**
+     * subscribe propChangeSubject
+     * this occur before array property value is changed
+     */
+    testArrayWatcher.propChangeSubject.subscribe( (data) => {
+    
+    });
+
+    /**
+     * subscribe propChangeSubject
+     * this occur before array order is changed
+     */
+    testArrayWatcher.orderChangerSubject.subscribe( (data) => {
+    
+    });
+
+    testArray = testArray.sort();
+    testArray.push(100);
+
+    ```
+
+- **Nodejs**
+
+    - Object Value and Propery change watch
+    ``` javascript
+    const ObjectWatcher = require('objectwatchers').ObjectWatcher;
+
+    /**
+     * Object Watcher Rxjs Subject Example code
+     */
+
+    let testObject = {
+        name: 'this is name'
+    }
+
+    console.log('original testObject is: ', testObject);
+
+    //Make Object Watcher
+    const testWatcher = new ObjectWatcher(testObject);
+    //Getting proxy object, original object convert to proxy object
+    testObject = testWatcher.proxy;
+
+    /**
+     * subscribe valueChangeSubject
+     * this occur before object property value is changed
+     */
+    testWatcher.valueChangeSubject.subscribe((data) => {
+    
+    })
+
+    /**
+     * subscribe propChangeSubject
+     * this occur before object property is added
+     */
+    testWatcher.propChangeSubject.subscribe((data) => {
+    
+    })
+
+    //try change object property value
+    testObject.name = 'this is name2';
+
+    //try add object property
+    testObject['name2'] = 'this is name2';
+
+    ```
+
+
+    - Array Value and Order change watch
+
+    ``` javascript
+     const ObjectWatcher = require('objectwatchers').ObjectWatcher;
 
     /**
      * Object Watcher Rxjs Subject Example code
@@ -193,6 +291,11 @@ Object value and prop change detection module
 
 - Global Value change watch(only for web browser)
     ``` javascript
+
+    <head>
+        <script src="../../dist/lib.bundle.umd.js"></script>
+    </head>
+
     test = 'james.eo';
     const gWatcher = new GlobalLiteralWatcher();
         
@@ -209,4 +312,3 @@ Object value and prop change detection module
     test = 'james.eo2';
 
     ```
-**
