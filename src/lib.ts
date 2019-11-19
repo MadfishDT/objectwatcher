@@ -15,7 +15,13 @@ export class GlobalLiteralWatcher {
     private valueSubject: Subject<IWatcherInfo>;
     private isStop: boolean;
     constructor() {
-        this.isBrowser= typeof window !== 'undefined' && typeof window.document !== 'undefined';
+        try{
+            if(window && typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+                this.isBrowser= true;
+            }
+        } catch(e) {
+            this.isBrowser= false;
+        }
         this.valueSubject = new Subject<IWatcherInfo>();
         this.isStop = false;
     }
@@ -25,7 +31,7 @@ export class GlobalLiteralWatcher {
     }
 
     private dispatchChangeWindowsMessage(type: string, data: IWatcherInfo): boolean {
-        if(this.isBrowser && window) {
+        if(this.isBrowser) {
             const event = new CustomEvent(type, {detail: data});
             window.dispatchEvent(event);
         } else {
@@ -88,8 +94,13 @@ export class ObjectWatcher<T> {
     
     protected handler: any = null;
     constructor(object: T) {
-
-        this.isBrowser= typeof window !== 'undefined' && typeof window.document !== 'undefined';
+        try{
+            if(window && typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+                this.isBrowser= true;
+            }
+        } catch(e) {
+            this.isBrowser= false;
+        }
         const self = this;
       
         this.valueSubject = new Subject<IWatcherInfo>();
@@ -178,7 +189,7 @@ export class ObjectWatcher<T> {
     }
 
     private dispatchChangeWindowsMessage(type: string, data: IWatcherInfo): boolean {
-        if(this.isBrowser && window) {
+        if(this.isBrowser) {
             const event = new CustomEvent(type, {detail: data});
             window.dispatchEvent(event);
         } else {

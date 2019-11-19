@@ -17,6 +17,7 @@ module.exports = {
   },
   output: {
     filename: 'lib.bundle.prod.js',
+    libraryTarget: 'commonjs',
     path: path.resolve(__dirname, '../dist')
   }
 };
