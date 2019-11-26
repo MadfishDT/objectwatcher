@@ -5,6 +5,7 @@ import { isBoolean } from 'util';
 type propDepthType = Array<string | number>;
 
 export interface IWatcherInfo {
+    origin?: any;
     target: any;
     prop?: string | number;
     oldValue?: any;
@@ -154,6 +155,10 @@ export class ObjectWatcher<T> {
                 }
                 
                 if(target[prop] !== val) {
+                    if(val instanceof Object || val instanceof Array) {
+                        let valTemp = new ObjectWatcher(val, prop, self);
+                        val = valTemp.proxy;
+                    }
                     this.changeValue(target, prop, target[prop], val);
                     target[prop] = val;
                     return true;
@@ -224,6 +229,7 @@ export class ObjectWatcher<T> {
             propDepthList = propDepthList.reverse();
         }
         const data: IWatcherInfo = {
+            origin: this.proxy,
             target: target,
             prop: prop,
             oldValue: old,
@@ -235,10 +241,22 @@ export class ObjectWatcher<T> {
         return true;
     }
 
-    private changeProp(target: any, prop: string | number): boolean {
+    private changeProp(target: any, prop: string | number, propDepthList?: propDepthType): boolean {
+        if(this.parent) {
+            if(!propDepthList) {
+                propDepthList = [];
+            }
+            propDepthList.push(this.name);
+            this.parent.changeProp(target, prop, propDepthList);
+            return;
+        }
+        if(propDepthList) {
+            propDepthList = propDepthList.reverse();
+        }
         const data: IWatcherInfo = {
             target: target,
             prop: prop,
+            propDepth: propDepthList
         }
         this.propSubject.next(data);
         this.dispatchChangeWindowsMessage('changeObjectProps', data);

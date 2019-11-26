@@ -27,6 +27,8 @@ testWatcher.valueChangeSubject.subscribe((data) => {
     console.log(`object old value is '${data.oldValue}'`);
     console.log(`object new value is '${data.newValue}'`);
     console.log(`object depth value is`, data.propDepth);
+    console.log(`object origin is`, data.origin);
+    
     console.log('**************************************************************\n');
 })
 
@@ -38,6 +40,8 @@ testWatcher.propChangeSubject.subscribe((data) => {
     console.log('**************************************************************');
     console.log(`object prop changed target is`, data.target);
     console.log(`object prop(key) '${data.prop}' added`);
+    console.log(`object depth value is`, data.propDepth);
+    console.log(`object origin is`, data.origin);
     console.log('**************************************************************\n');
 })
 
