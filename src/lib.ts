@@ -2,11 +2,14 @@
 import { Subject } from 'rxjs';
 import { isBoolean } from 'util';
 
+type propDepthType = Array<string | number>;
+
 export interface IWatcherInfo {
     target: any;
     prop?: string | number;
     oldValue?: any;
     newValue?: any;
+    propDepth?: propDepthType;
 };
 
 export class GlobalLiteralWatcher {
@@ -108,9 +111,12 @@ export class ObjectWatcher<T> {
     private proxyObject: T;
     private isBrowser = false;
     private isArray = false;
+    private parent: any;
+    private name: string | number;
     
+    // top parent do not need own name, but child object have name
     protected handler: any = null;
-    constructor(object: T) {
+    constructor(object: T, name: string | number = null, parent: any = null) {
         try{
             if(window && typeof window !== 'undefined' && typeof window.document !== 'undefined') {
                 this.isBrowser= true;
@@ -123,8 +129,14 @@ export class ObjectWatcher<T> {
         this.valueSubject = new Subject<IWatcherInfo>();
         this.propSubject = new Subject<IWatcherInfo>();
 
+        if(parent) {
+            this.parent = parent;
+            this.name = name;
+        }
+       
         const handler = {
             set: (target: any, prop: string | number, val: any): boolean => {
+
                 if (target instanceof Array) {
                     if(prop !== 'length') {
                         prop = Number(prop);
@@ -132,6 +144,10 @@ export class ObjectWatcher<T> {
                 }
 
                 if(!target.hasOwnProperty(prop)) {
+                    if(val instanceof Object || val instanceof Array) {
+                        let valTemp = new ObjectWatcher(val, prop, self);
+                        val = valTemp.proxy;
+                    }
                     this.changeProp(target, prop);
                     target[prop] = val;
                     return true;
@@ -142,6 +158,7 @@ export class ObjectWatcher<T> {
                     target[prop] = val;
                     return true;
                 }
+
                 return true;
             }
         };
@@ -163,9 +180,20 @@ export class ObjectWatcher<T> {
                     }
             });
         }
-
+        this.refreshObjectRecusive(this.proxy);
     }
- 
+
+    private refreshObjectRecusive(obj: any): boolean {
+        
+        for (let prop in obj) {
+            if (obj.hasOwnProperty(prop) && obj[prop] instanceof Object) {
+                let tempObj= new ObjectWatcher(obj[prop], prop, this);
+                obj[prop] = tempObj.proxy;
+            }
+        }
+        return true;
+    }
+
     public get proxy(): T {
         return this.proxyObject;
     }
@@ -182,13 +210,25 @@ export class ObjectWatcher<T> {
         return this.orderSubject;
     }
 
-    private changeValue(target: any, prop: string | number, old: any, nval: any): boolean {
+    private changeValue(target: any, prop: string | number, old: any, nval: any, propDepthList?: propDepthType): boolean {
         
+        if(this.parent) {
+            if(!propDepthList) {
+                propDepthList = [];
+            }
+            propDepthList.push(this.name);
+            this.parent.changeValue(target, prop, old, nval, propDepthList);
+            return;
+        }
+        if(propDepthList) {
+            propDepthList = propDepthList.reverse();
+        }
         const data: IWatcherInfo = {
             target: target,
             prop: prop,
             oldValue: old,
-            newValue: nval
+            newValue: nval,
+            propDepth: propDepthList
         };
         this.valueSubject.next(data);
         this.dispatchChangeWindowsMessage('changeObjectValues', data);
