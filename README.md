@@ -49,16 +49,38 @@ Object value and prop change detection module
     - IWatcherInfo
     ```typescript
     {
-        target: any; 
+        origin?: any;
+        target: any;
         prop?: string | number;
         oldValue?: any;
         newValue?: any;
+        propDepth?: propDepthType;
     }
     ```
+        - origin: top parent object
         - target: target object
         - prop: property name or index
         - oldValue: old value of object[property]
         - oldValue: new value of object[property]
+        - propDepth: object property depth array
+            - A { 
+                name: {
+                    sub: 'change'
+                }
+            }
+            - if change A.name.sub
+            - propDepth ['name']
+            - we can 'property name' from prop
+             - A { 
+                name: {
+                    sub: {
+                        sub2: 'change2'
+                    }
+                }
+            }
+            - if change A.name.sub.sub2
+            - propDepth ['name','sub']
+            - we can 'property name' from prop
         
 - Method 
     - getter

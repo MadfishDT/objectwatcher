@@ -6311,10 +6311,13 @@ var GlobalLiteralWatcher = /** @class */ (function () {
 }());
 exports.GlobalLiteralWatcher = GlobalLiteralWatcher;
 var ObjectWatcher = /** @class */ (function () {
-    function ObjectWatcher(object) {
+    function ObjectWatcher(object, name, parent) {
         var _this = this;
+        if (name === void 0) { name = null; }
+        if (parent === void 0) { parent = null; }
         this.isBrowser = false;
         this.isArray = false;
+        // top parent do not need own name, but child object have name
         this.handler = null;
         try {
             if (window && typeof window !== 'undefined' && typeof window.document !== 'undefined') {
@@ -6327,6 +6330,10 @@ var ObjectWatcher = /** @class */ (function () {
         var self = this;
         this.valueSubject = new rxjs_1.Subject();
         this.propSubject = new rxjs_1.Subject();
+        if (parent) {
+            this.parent = parent;
+            this.name = name;
+        }
         var handler = {
             set: function (target, prop, val) {
                 if (target instanceof Array) {
@@ -6335,11 +6342,19 @@ var ObjectWatcher = /** @class */ (function () {
                     }
                 }
                 if (!target.hasOwnProperty(prop)) {
+                    if (val instanceof Object || val instanceof Array) {
+                        var valTemp = new ObjectWatcher(val, prop, self);
+                        val = valTemp.proxy;
+                    }
                     _this.changeProp(target, prop);
                     target[prop] = val;
                     return true;
                 }
                 if (target[prop] !== val) {
+                    if (val instanceof Object || val instanceof Array) {
+                        var valTemp = new ObjectWatcher(val, prop, self);
+                        val = valTemp.proxy;
+                    }
                     _this.changeValue(target, prop, target[prop], val);
                     target[prop] = val;
                     return true;
@@ -6363,7 +6378,17 @@ var ObjectWatcher = /** @class */ (function () {
                 }
             });
         }
+        this.refreshObjectRecusive(this.proxy);
     }
+    ObjectWatcher.prototype.refreshObjectRecusive = function (obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && obj[prop] instanceof Object) {
+                var tempObj = new ObjectWatcher(obj[prop], prop, this);
+                obj[prop] = tempObj.proxy;
+            }
+        }
+        return true;
+    };
     Object.defineProperty(ObjectWatcher.prototype, "proxy", {
         get: function () {
             return this.proxyObject;
@@ -6392,21 +6417,46 @@ var ObjectWatcher = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    ObjectWatcher.prototype.changeValue = function (target, prop, old, nval) {
+    ObjectWatcher.prototype.changeValue = function (target, prop, old, nval, propDepthList) {
+        if (this.parent) {
+            if (!propDepthList) {
+                propDepthList = [];
+            }
+            propDepthList.push(this.name);
+            this.parent.changeValue(target, prop, old, nval, propDepthList);
+            return;
+        }
+        if (propDepthList) {
+            propDepthList = propDepthList.reverse();
+        }
         var data = {
+            origin: this.proxy,
             target: target,
             prop: prop,
             oldValue: old,
-            newValue: nval
+            newValue: nval,
+            propDepth: propDepthList
         };
         this.valueSubject.next(data);
         this.dispatchChangeWindowsMessage('changeObjectValues', data);
         return true;
     };
-    ObjectWatcher.prototype.changeProp = function (target, prop) {
+    ObjectWatcher.prototype.changeProp = function (target, prop, propDepthList) {
+        if (this.parent) {
+            if (!propDepthList) {
+                propDepthList = [];
+            }
+            propDepthList.push(this.name);
+            this.parent.changeProp(target, prop, propDepthList);
+            return;
+        }
+        if (propDepthList) {
+            propDepthList = propDepthList.reverse();
+        }
         var data = {
             target: target,
             prop: prop,
+            propDepth: propDepthList
         };
         this.propSubject.next(data);
         this.dispatchChangeWindowsMessage('changeObjectProps', data);
