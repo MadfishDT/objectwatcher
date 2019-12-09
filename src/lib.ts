@@ -108,6 +108,7 @@ export class ObjectWatcher<T> {
 
     private valueSubject: Subject<IWatcherInfo>;
     private propSubject: Subject<IWatcherInfo>;
+    private propDelSubject: Subject<IWatcherInfo>;
     private orderSubject: Subject<Array<any>>;
     private proxyObject: T;
     private isBrowser = false;
@@ -129,6 +130,7 @@ export class ObjectWatcher<T> {
       
         this.valueSubject = new Subject<IWatcherInfo>();
         this.propSubject = new Subject<IWatcherInfo>();
+        this.propDelSubject = new Subject<IWatcherInfo>();
 
         if(parent) {
             this.parent = parent;
@@ -136,6 +138,7 @@ export class ObjectWatcher<T> {
         }
        
         const handler = {
+
             set: (target: any, prop: string | number, val: any): boolean => {
 
                 if (target instanceof Array) {
@@ -164,6 +167,12 @@ export class ObjectWatcher<T> {
                     return true;
                 }
 
+                return true;
+            },
+            deleteProperty: (target: any, prop: string | number): boolean =>{
+                if (prop in target) {
+                  delete target[prop];
+                }
                 return true;
             }
         };
@@ -202,19 +211,43 @@ export class ObjectWatcher<T> {
     public get proxy(): T {
         return this.proxyObject;
     }
-    
     public get valueChangeSubject(): Subject<IWatcherInfo> {
         return this.valueSubject;
     }
-    
+    public get propDeleteSubject(): Subject<IWatcherInfo> {
+        return this.propDelSubject;
+    }
     public get propChangeSubject(): Subject<IWatcherInfo> {
         return this.propSubject;
     }
-
     public get orderChangerSubject(): Subject<Array<any>> {
         return this.orderSubject;
     }
-
+    private deleteValue(target: any, prop: string | number, old: any, nval: any, propDepthList?: propDepthType): boolean {
+        
+        if(this.parent) {
+            if(!propDepthList) {
+                propDepthList = [];
+            }
+            propDepthList.push(this.name);
+            this.parent.changeValue(target, prop, old, nval, propDepthList);
+            return;
+        }
+        if(propDepthList) {
+            propDepthList = propDepthList.reverse();
+        }
+        const data: IWatcherInfo = {
+            origin: this.proxy,
+            target: target,
+            prop: prop,
+            oldValue: old,
+            newValue: nval,
+            propDepth: propDepthList
+        };
+        this.valueSubject.next(data);
+        this.dispatchChangeWindowsMessage('changeObjectValues', data);
+        return true;
+    }
     private changeValue(target: any, prop: string | number, old: any, nval: any, propDepthList?: propDepthType): boolean {
         
         if(this.parent) {
