@@ -60,3 +60,8 @@ testObject['obj'] = {
 
 testObject['obj']['namesss'] = 'aaa';
 testObject['obj']['namesss2']['namesaaaaaa'] = 'aaa2';
+testWatcher.propDeleteSubject.subscribe( (data: any) => {
+    console.log('delete object');
+    console.log(data);
+});
+delete testObject['obj']['namesss2']

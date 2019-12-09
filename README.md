@@ -27,6 +27,9 @@ Object value and prop change detection module
 * Watch object Propery(Key) change(added property notify)
     * RXjs Subject Support
     * windows message Support
+* Watch object Propery(Key) Delete
+    * RXjs Subject Support
+    * windows message Support
 * Watch Array variable change
     * RXjs Subject Support
     * windows message Support
@@ -96,6 +99,7 @@ Object value and prop change detection module
     - changeObjectValues
     - changeObjectProps
     - changeArrayOrder
+    - deleteObjectProp
 
 ***GlobalLiteralWatcher***
 
@@ -263,6 +267,11 @@ Object value and prop change detection module
     //try add object property
     testObject['name2'] = 'this is name2';
 
+
+    testWatcher.propDeleteSubject.subscribe( (data: any) => {
+      
+    });
+    delete testObject['obj']['namesss2']
     ```
 
 

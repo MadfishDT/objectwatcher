@@ -45,3 +45,5 @@ testObject.name = 'that is not name';
 
 //try add object property
 testObject['name2'] = 'I am Name2';
+
+delete testObject.name

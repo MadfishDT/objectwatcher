@@ -171,7 +171,8 @@ export class ObjectWatcher<T> {
             },
             deleteProperty: (target: any, prop: string | number): boolean =>{
                 if (prop in target) {
-                  delete target[prop];
+                    this.deleteProp(target,prop);
+                    delete target[prop];
                 }
                 return true;
             }
@@ -223,14 +224,15 @@ export class ObjectWatcher<T> {
     public get orderChangerSubject(): Subject<Array<any>> {
         return this.orderSubject;
     }
-    private deleteValue(target: any, prop: string | number, old: any, nval: any, propDepthList?: propDepthType): boolean {
+
+    private deleteProp(target: any, prop: string | number, propDepthList?: propDepthType): boolean {
         
         if(this.parent) {
             if(!propDepthList) {
                 propDepthList = [];
             }
             propDepthList.push(this.name);
-            this.parent.changeValue(target, prop, old, nval, propDepthList);
+            this.parent.deleteProp(target, prop, propDepthList);
             return;
         }
         if(propDepthList) {
@@ -240,14 +242,13 @@ export class ObjectWatcher<T> {
             origin: this.proxy,
             target: target,
             prop: prop,
-            oldValue: old,
-            newValue: nval,
             propDepth: propDepthList
         };
-        this.valueSubject.next(data);
-        this.dispatchChangeWindowsMessage('changeObjectValues', data);
+        this.propDeleteSubject.next(data);
+        this.dispatchChangeWindowsMessage('deleteObjectProp', data);
         return true;
     }
+
     private changeValue(target: any, prop: string | number, old: any, nval: any, propDepthList?: propDepthType): boolean {
         
         if(this.parent) {

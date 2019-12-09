@@ -1,6 +1,6 @@
 {
   "name": "objectwatchers",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/lib.bundle.prod.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/MadfishDT/objectwatcher"
   },
-  "keywords": ["watcher","object","observer","web","typescript","javscript"],
+  "keywords": ["watcher","object","observer","web","typescript","javscript","change"],
   "author": "MadfishDT",
   "homepage": "https://madfishdt.github.io",
   "license": "ISC",
